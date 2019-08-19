@@ -3,18 +3,21 @@ import {
     call,
     fork,
     put,
-    takeEvery
+    takeEvery,
+    actionChannel
   } from "redux-saga/effects";
   import {tableDataRecv} from '../action/index'
 
   const GET_TABLE_DATA_REQ = "GET_TABLE_DATA_REQ";
-  const TABLE_DATA_RECV = "TABLE_DATA_RECV";
 
 
 
-  function* tableCall() {
+  function* tableCall(action) {
     try {
-      const tableData = yield fetch("http://localhost:3005/upload")
+      const tableData = yield fetch("http://localhost:3005/upload",{
+        method:"POST",
+        body:(action.payload),
+      })
         .then(response => response.json())
         .catch(error => error);
       if (tableData) {
@@ -26,29 +29,12 @@ import {
     }
   }
 
-  function* getCall() {
-    try {
-      const tableData = yield fetch("http://localhost:3005/")
-        .then(response => response.json())
-        .catch(error => error);
-      if (tableData) {
-        console.log(tableData)
-        // yield put(tableDataRecv(tableData));
-      }else{
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   export function* uploadFile() {
-    yield takeEvery(TABLE_DATA_RECV, tableCall);
+    yield takeEvery(GET_TABLE_DATA_REQ, tableCall);
   }
   
-  export function* testCall() {
-    yield takeEvery(GET_TABLE_DATA_REQ, getCall);
-  }
 
   export default function* rootSaga() {
-    yield all([fork(uploadFile),fork(testCall)]);
+    yield all([fork(uploadFile)]);
   }

@@ -4,9 +4,6 @@ const cors = require('cors')
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const csv = require("csvtojson");
-var multer = require('multer');
-var csvParse = require("csv-parse");
-var upload = multer();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -19,9 +16,10 @@ app.get('/', (req, res) => {
 })
 
 app.post('/upload', (req, res) => {
+  // console.log(req.files)
     csvData = req.files.data.data.toString('utf8');
     return csv().fromString(csvData).then(json => 
-      {return res.status(201).json({csv:csvData, json:json})})
+      {return res.status(201).json({csv:csvData, tableData:json})})
     // var csva = req.files.data.data.toString('utf8')
     // res.send({a:csva})
 })

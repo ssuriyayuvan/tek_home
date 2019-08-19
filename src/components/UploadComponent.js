@@ -1,59 +1,76 @@
 import React, { Component } from 'react'
 // import FileUploadProgress  from 'react-fileupload-progress';
-import axios from "axios"
-import {Link} from 'react-router-dom'
-import TableComponent from './TableComponent'
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
-import {getTableDataReq} from '../appRedux/action'
+import { Modal } from 'antd'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { getTableDataReq, tableDataRecv } from '../appRedux/action'
+import { Button } from 'antd/lib/radio';
 
 class UploadComponent extends Component {
 
-    state={
-        tableData:[],
-        col:[],
-        row:[]
+    state = {
+        tableData: [],
+        col: [],
+        row: [],
+        popUp: ''
     }
 
-  
-    handleFiles = (e,bytes) => {
+
+    handleFiles = (e, bytes) => {
         e.preventDefault();
         var formData = new FormData();
         var data = e.target.files[0]
         formData.append("data", data)
         console.log(formData)
-        axios.post("http://localhost:3005/upload",formData).then(res =>{
-        var data = res.data.json    
-        this.setState({tableData:data})
-        // console.log(res.data.json)
-        console.log(this.state.tableData)})
+        this.props.getTableDataReq(formData)
+        this.setState({
+            popUp: true
+        })
     }
 
-    componentDidMount() {
-        this.props.getTableDataReq();
-        // fetch("http://localhost:3005/").then(data => data.json()).then(res => console.log(res))
+    componentWillReceiveProps(p) {
+        console.log(p)
+        if (this.props.data !== '') {
+            this.setState({
+                popUp: true
+            })
+        }
+    }
+
+    setFalse = () => {
+        this.props.history.push('/table')
     }
 
     render() {
+        console.log(this.state.popUp)
+
         return (
             <div>
-                <form>
-                    <input type="file" accept=".csv" onChange={this.handleFiles} />
-                    <input type="submit" value="Submit" />
-                </form>
-                   {this.state.tableData !='' ? <TableComponent data={this.state.tableData} />:''}
+                {this.state.popUp && <Modal
+                    footer={null}
+                    visible={this.state.popUp}
+                    onCancel={this.setFalse}
+                >
+                    <p>Uploaded Successfully</p>
+                    <Button onClick={this.setFalse}>Open File</Button>
+                    {/* <button className="btn btn-success">Open File</button> */}
+                </Modal>}
+                <div className="fileUpload">
+                    <label className="btna fileUpload btna-default">
+                        Browse Files Here<input type="file" accept=".csv" onChange={this.handleFiles} hidden="" />
+                    </label>
+                </div>
             </div>
         )
     }
 }
 
-const mapStateToProps = (state) =>{
-    console.log(state)
-    return {}
+const mapStateToProps = (state) => {
+    return { data: state.table }
 }
 
 const mapDispatchToProps = (dispatcher) => {
-    return bindActionCreators({getTableDataReq},dispatcher)
+    return bindActionCreators({ getTableDataReq, tableDataRecv }, dispatcher)
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(UploadComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(UploadComponent)
