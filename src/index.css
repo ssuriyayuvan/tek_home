@@ -13,7 +13,35 @@ code {
     monospace;
 }
 
+
 table,td,tr,th{
+
   border: 1px solid black;
   border-collapse: collapse;
+}
+
+thead,th{
+  background-color:gray;
+}
+
+.fileUpload{
+  margin-left: 750px;
+  width: 500px;
+  border: 1px dashed #BBBB;
+  height: 150px;
+  padding: 50px;
+  margin-top: 270px;
+}
+
+.fileUpload input[type=file]{
+  display:none;
+}
+.btna{
+  margin-left: 0; 
+  background-color:#e3e3e3;
+  color:#333;
+  border:1px solid #e6e6e6;
+  border-radius:3px;
+  padding:6px 12px;
+  font-size:16px;
 }
